@@ -1,6 +1,9 @@
 addEventListener('load', function() {
     document.getElementById('play').addEventListener('click', 
     function(){
+        let name = prompt("Entra el nom d'usuari:");
+
+        console.log("El teun nom és: " + name);
         alert("Comença la partida");
     });
 
