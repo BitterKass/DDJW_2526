@@ -16,9 +16,10 @@ var game = {
     states: [],
     setValue: null,
     ready: 0,
-    lastCard: null,
+    flippedCards: [],
     score: 200,
-    pairs: 2,
+    groupsRemaining: 2,
+    groupSize: 2,
     goBack: function(idx){
         this.setValue && this.setValue[idx](back);
         this.states[idx] = StateCard.ENABLE;
@@ -32,17 +33,29 @@ var game = {
             let toLoad = JSON.parse(sessionStorage.load);
             this.items = toLoad.items;
             this.states = toLoad.states;
-            this.lastCard = toLoad.lastCard;
+            this.flippedCards = toLoad.flippedCards || []; // CORREGIT
             this.score = toLoad.score;
-            this.pairs = toLoad.pairs;
+            this.groupsRemaining = toLoad.pairs;
+            this.groupSize = toLoad.groupSize || 2;
         }
         else{ // Nova partida
+            let savedOptions = localStorage.options ? JSON.parse(localStorage.options) : {pairs: 2, groupSize: 2};
+            this.groupsRemaining = parseInt(savedOptions.pairs) || 2;
+            this.groupSize = parseInt(savedOptions.groupSize) || 2;
+            this.flippedCards = []; // CORREGIT
+
             this.items = resources.slice();
             shuffe(this.items);
-            this.items = this.items.slice(0, this.pairs);
-            this.items = this.items.concat(this.items);
+
+            let selectedCards = this.items.slice(0, this.groupsRemaining);
+
+            this.items = [];
+            for(let i = 0; i < this.groupSize; i++) {
+                this.items = this.items.concat(selectedCards);
+            }
+
             shuffe(this.items);
-            this.states = new Array(this.items.length);
+            this.states = new Array(this.items.length).fill(StateCard.ENABLE);
         }
     },
     start: function(){
@@ -62,44 +75,49 @@ var game = {
     click: function(indx){
         if (this.states[indx] !== StateCard.ENABLE || this.ready < this.items.length) return;
         this.goFront(indx);
-        if (this.lastCard === null) this.lastCard = indx; // Primera carta clicada
-        else{ // Teníem carta prèvia
-            if (this.items[this.lastCard] === this.items[indx]){
-                this.pairs--;
-                this.states[this.lastCard] = this.states[indx] = StateCard.DONE;
-                if (this.pairs <= 0){
+        this.flippedCards.push(indx);
+
+        if (this.flippedCards.length === this.groupSize) {
+            let referenceCard = this.items[this.flippedCards[0]];
+            let allMatch = this.flippedCards.every(id => this.items[id] === referenceCard); // CORREGIT
+
+            if (allMatch) {
+                this.groupsRemaining--;
+                this.flippedCards.forEach(id => this.states[id] = StateCard.DONE);
+                if (this.groupsRemaining <= 0) {
                     alert(`Has guanyat amb ${this.score} punts!!!!`);
                     window.location.assign("../");
                 }
-            }
-            else {
-                this.goBack(indx);
-                this.goBack(this.lastCard);
+            } else {
+                this.flippedCards.forEach(id => this.goBack(id));
                 this.score -= 25;
                 if (this.score <= 0){
                     alert ("Has perdut");
                     window.location.assign("../");
                 }
             }
-            this.lastCard = null;
+
+            this.flippedCards = [];
         }
     },
     save: function(){
         let to_save = JSON.stringify({
             items: this.items,
             states: this.states,
-            lastCard: this.lastCard,
+            flippedCards: this.flippedCards,
             score: this.score,
-            pairs: this.pairs
+            pairs: this.groupsRemaining,
+            groupSize: this.groupSize
         });
+
         let ret = false;
         fetch('../php/save.php', {
             method: "POST",
             body: to_save,
             headers: {"Content-type": "application/json; charset=UTF-8"}
         })
-        .then(response => ret = JSON.parse(response))
-        .catch (err => console.error(err));
+            .then(response => ret = JSON.parse(response))
+            .catch (err => console.error(err));
 
         if (!ret) {
             console.warn("La partida s'ha guardat en local.");

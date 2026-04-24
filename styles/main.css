@@ -65,4 +65,20 @@ button.center{
 	display: grid;
 	gap: 15px;
 	justify-content: center;
+
+	margin: 0 auto;
+	width: fit-content;
+	max-width: 100%;
+	box-sizing: border-box;
+}
+
+#game img {
+	width: 100%;
+	max-width: 96px;
+	min-width: 45px;
+	height: auto;
+	aspect-ratio: 96 / 128;
+	cursor: pointer;
+	border-radius: 5px;
+	box-shadow: 2px 2px 5px rgba(0,0,0,0.3);
 }

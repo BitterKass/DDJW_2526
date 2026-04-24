@@ -5,6 +5,12 @@ var cards = [];
 var game = $('#game');
 
 selectCards();
+
+let totalCards = gameItems.length;
+let cols = Math.ceil(Math.sqrt(totalCards));
+
+game.css('grid-template-columns', `repeat(${cols}, 1fr)`)
+
 gameItems.forEach(function (value, idx)
 {
     game.append(`<img id="${idx}" title="card">`);  // Add element
