@@ -36,81 +36,6 @@ var game = {
         this.setValue && this.setValue[idx](this.items[idx]);
         this.states[idx] = StateCard.DISABLE;
     },
-    select: function () {
-        let toLoad = sessionStorage.load ? JSON.parse(sessionStorage.load) : null;
-        if (toLoad && toLoad.items && toLoad.items.length > 0) { // Carreguem partida
-            this.items = toLoad.items;
-            this.states = toLoad.states;
-            this.flippedCards = toLoad.flippedCards || [];
-            this.score = toLoad.score;
-            this.groupsRemaining = toLoad.pairs;
-            this.groupSize = toLoad.groupSize || 2;
-            this.gameMode = toLoad.gameMode || 1;
-            this.level = toLoad.level || 1;
-            this.penalty = toLoad.penalty || 25;
-            this.timeBase = toLoad.timeBase || 1000;
-        } else { // Nova partida
-            if (toLoad && toLoad.gameMode === 2) {
-                this.gameMode = 2;
-                this.level = toLoad.level;
-                this.score = toLoad.score;
-                this.initialGroups = toLoad.pairs;
-                this.groupsRemaining = toLoad.pairs;
-                this.groupSize = toLoad.groupSize;
-                this.penalty = toLoad.penalty;
-                this.timeBase = toLoad.timeBase;
-                this.timeStep = toLoad.timeStep;
-            } else {
-                this.gameMode = parseInt(sessionStorage.getItem('gameMode')) || 1;
-                this.level = 1;
-                this.score = 200;
-
-                if (this.gameMode === 1) {
-                    let savedOptions = localStorage.options ? JSON.parse(localStorage.options) : {pairs: 2, groupSize: 2, difficulty: 'normal'};
-                    this.initialGroups = parseInt(savedOptions.pairs) || 2;
-                    this.groupsRemaining = this.initialGroups;
-                    this.groupSize = parseInt(savedOptions.groupSize) || 2;
-
-                    if (savedOptions.difficulty === 'hard') {
-                        this.groupSize++;
-                        this.penalty = 50;
-                        this.timeBase = 500;
-                    } else if (savedOptions.difficulty === 'easy') {
-                        this.groupSize = Math.max(2, this.groupSize - 1);
-                        this.penalty = 10;
-                        this.timeBase = 1500;
-                    } else {
-                        this.penalty = 25;
-                        this.timeBase = 1000;
-                    }
-                } else {
-                    this.initialGroups = 2;
-                    this.groupsRemaining = 2;
-                    this.groupSize = 2;
-                    this.penalty = 15;
-                    this.timeBase = 1500;
-                    this.timeStep = 150;
-                }
-            }
-
-            this.flippedCards = [];
-            this.items = resources.slice();
-            shuffe(this.items);
-
-            let selectedCards = [];
-            for (let i = 0; i < this.groupsRemaining; i++) {
-                selectedCards.push(this.items[i % this.items.length]);
-            }
-
-            this.items = [];
-            for(let i = 0; i < this.groupSize; i++) {
-                this.items = this.items.concat(selectedCards);
-            }
-
-            shuffe(this.items);
-            this.states = new Array(this.items.length).fill(StateCard.ENABLE);
-        }
-    },
     start: function () {
         this.items.forEach((_, indx) => {
             if (this.states[indx] === StateCard.DISABLE ||
@@ -120,7 +45,7 @@ var game = {
                 setTimeout(() => {
                     this.ready++;
                     this.goBack(indx);
-                }, 1000 + 100 * indx);
+                }, this.timeBase + this.timeStep * indx);
             }
         });
     },
@@ -168,7 +93,7 @@ var game = {
                 }
             } else {
                 this.flippedCards.forEach(id => this.goBack(id));
-                this.score -= 25;
+                this.score -= this.penalty;
                 if (this.score <= 0) {
                     alert("Has perdut");
                     window.location.assign("../");
@@ -178,8 +103,87 @@ var game = {
             this.flippedCards = [];
         }
     },
+    select: function () {
+        let toLoad = sessionStorage.load ? JSON.parse(sessionStorage.load) : null;
+
+        if (toLoad && toLoad.items && toLoad.items.length > 0) {
+            this.items = toLoad.items;
+            this.states = toLoad.states;
+            this.flippedCards = toLoad.flippedCards || [];
+            this.score = toLoad.score;
+            this.groupsRemaining = toLoad.pairs;
+            this.groupSize = toLoad.groupSize;
+            this.gameMode = toLoad.gameMode;
+            this.level = toLoad.level;
+            this.penalty = toLoad.penalty;
+            this.timeBase = toLoad.timeBase;
+
+            sessionStorage.removeItem('load');
+        } else {
+            if (toLoad && toLoad.gameMode === 2) {
+                // Carreguem la configuració del NOU NIVELL Mode 2
+                this.gameMode = 2;
+                this.level = toLoad.level;
+                this.score = toLoad.score;
+                this.initialGroups = toLoad.pairs;
+                this.groupSize = toLoad.groupSize;
+                this.penalty = toLoad.penalty;
+                this.timeBase = toLoad.timeBase;
+                this.timeStep = toLoad.timeStep;
+                sessionStorage.removeItem('load');
+            } else {
+                this.gameMode = parseInt(sessionStorage.getItem('gameMode')) || 1;
+                this.level = 1;
+                this.score = 200;
+                this.flippedCards = [];
+
+                if (this.gameMode === 1) {
+                    let savedOptions = localStorage.options ? JSON.parse(localStorage.options) : {
+                        pairs: 2,
+                        groupSize: 2,
+                        difficulty: 'normal'
+                    };
+                    this.initialGroups = parseInt(savedOptions.pairs) || 2;
+                    this.groupSize = parseInt(savedOptions.groupSize) || 2;
+
+                    if (savedOptions.difficulty === 'hard') {
+                        this.groupSize++;
+                        this.penalty = 50;
+                        this.timeBase = 500;
+                    } else if (savedOptions.difficulty === 'easy') {
+                        this.groupSize = Math.max(2, this.groupSize - 1);
+                        this.penalty = 10;
+                        this.timeBase = 1500;
+                    } else {
+                        this.penalty = 25;
+                        this.timeBase = 1000;
+                    }
+                } else {
+                    this.initialGroups = 2;
+                    this.groupSize = 2;
+                    this.penalty = 15;
+                    this.timeBase = 1500;
+                }
+            }
+            this.groupsRemaining = this.initialGroups;
+
+            this.items = resources.slice();
+            shuffe(this.items);
+            let selectedCards = [];
+            for (let i = 0; i < this.groupsRemaining; i++) {
+                selectedCards.push(this.items[i % this.items.length]);
+            }
+            this.items = [];
+            for (let i = 0; i < this.groupSize; i++) {
+                this.items = this.items.concat(selectedCards);
+            }
+            shuffe(this.items);
+            this.states = new Array(this.items.length).fill(StateCard.ENABLE);
+        }
+    },
     save: function () {
-        let to_save = JSON.stringify({
+        let gameSave = {
+            date: new Date().toLocaleString(),
             items: this.items,
             states: this.states,
             flippedCards: this.flippedCards,
@@ -189,22 +193,18 @@ var game = {
             gameMode: this.gameMode,
             level: this.level,
             penalty: this.penalty,
-            timeBase: this.timeBase
-        });
+            timeBase: this.timeBase,
+            timeStep: this.timeStep
+        };
 
-        let ret = false;
-        fetch('../php/save.php', {
-            method: "POST",
-            body: to_save,
-            headers: {"Content-type": "application/json; charset=UTF-8"}
-        })
-            .then(response => ret = JSON.parse(response))
-            .catch(err => console.error(err));
+        let saves = JSON.parse(localStorage.getItem('memory_saves')) || [];
+        saves.unshift(gameSave);
 
-        if (!ret) {
-            console.warn("La partida s'ha guardat en local.");
-            localStorage.save = to_save;
+        if (saves.length > 5) {
+            saves.pop();
         }
+        localStorage.setItem('memory_saves', JSON.stringify(saves));
+        alert("Partida guardada correctament!");
         window.location.assign("../");
     }
 }
