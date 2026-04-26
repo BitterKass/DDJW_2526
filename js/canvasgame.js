@@ -22,14 +22,22 @@ function start(){
     selectCards();
     cards = gameItems.map((c)=>{return {texture:c}});
     loadCardResource("../resources/back.png");
+
+    let totalCards = gameItems.length;
+    let cols = Math.ceil(Math.log(totalCards));
+
     cards.forEach((card, indx) => {
         loadCardResource(card.texture);
         initCard(val => card.texture = val);
+
+        let xPos = 20 + 100 * col;
+        let yPos = 20 + 135 * row;
+
         card.position = {
-            xMin: 2+100*indx,
-            xMax: 2+100*indx + c_w,
-            yMin: 0,
-            yMax: c_h
+            xMin: xPos,
+            xMax: xPos + c_w,
+            yMin: yPos,
+            yMax: yPos + c_h
         }
         card.onClick = function(x, y){
             return x >= this.position.xMin && x <= this.position.xMax &&
