@@ -112,7 +112,7 @@ input[type="number"]:focus, select:focus {
 }
 
 #game img {
-	width: 100%;
+	width: 120px;
 	max-width: 96px;
 	min-width: 45px;
 	height: auto;

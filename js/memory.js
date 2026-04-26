@@ -1,10 +1,23 @@
 import {jQuery} from '../library/jquery-4.0.0.slim.module.min.js';
 import {setValue, clickOn, clickOff} from './game.js';
 
-const resources = ['../resources/cb.png', '../resources/co.png',
-    '../resources/sb.png', '../resources/so.png',
-    '../resources/tb.png', '../resources/to.png'];
-const back = '../resources/back.png';
+const svgBase = 'data:image/svg+xml;utf8,';
+
+const back = svgBase + '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 128"><rect width="96" height="128" fill="black"/><rect x="6" y="6" width="84" height="116" fill="%230095ff"/></svg>';
+
+const resources = [
+    svgBase + '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 128"><rect width="96" height="128" fill="white" stroke="black" stroke-width="12"/><circle cx="48" cy="64" r="30" fill="%230095ff" stroke="black" stroke-width="3"/></svg>',
+
+    svgBase + '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 128"><rect width="96" height="128" fill="white" stroke="black" stroke-width="12"/><circle cx="48" cy="64" r="30" fill="%23ff7b00" stroke="black" stroke-width="3"/></svg>',
+
+    svgBase + '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 128"><rect width="96" height="128" fill="white" stroke="black" stroke-width="12"/><rect x="22" y="38" width="52" height="52" fill="%230095ff" stroke="black" stroke-width="3"/></svg>',
+
+    svgBase + '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 128"><rect width="96" height="128" fill="white" stroke="black" stroke-width="12"/><rect x="22" y="38" width="52" height="52" fill="%23ff7b00" stroke="black" stroke-width="3"/></svg>',
+
+    svgBase + '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 128"><rect width="96" height="128" fill="white" stroke="black" stroke-width="12"/><polygon points="48,30 20,90 76,90" fill="%230095ff" stroke="black" stroke-width="3"/></svg>',
+
+    svgBase + '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 128"><rect width="96" height="128" fill="white" stroke="black" stroke-width="12"/><polygon points="48,30 20,90 76,90" fill="%23ff7b00" stroke="black" stroke-width="3"/></svg>'
+];
 
 const StateCard = Object.freeze({
     DISABLE: 0,
@@ -155,7 +168,7 @@ var game = {
                         this.penalty = 10;
                         this.timeBase = 1500;
                     } else {
-                        this.penalty = 25; 
+                        this.penalty = 25;
                         this.timeBase = 1000;
                     }
                 } else {
