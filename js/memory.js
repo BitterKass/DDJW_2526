@@ -79,6 +79,9 @@ var game = {
                         alert(`Has guanyat amb ${this.score} punts!!!!`);
                         window.location.assign("../");
                     } else {
+                        let bonus = 100;
+                        this.score += bonus;
+
                         alert(`Nivell ${this.level} completat! Puntuació: ${this.score}. Preparat pel següent?`);
 
                         this.level++;
@@ -108,11 +111,24 @@ var game = {
                 this.flippedCards.forEach(id => this.goBack(id));
                 this.score -= this.penalty;
                 if (this.score <= 0) {
-                    alert("Has perdut");
+                    if (this.gameMode === 2) {
+                        let ranking = JSON.parse(localStorage.getItem('memory_ranking')) || [];
+                        let username = sessionStorage.getItem('username') || 'Anònim';
+
+                        ranking.push({
+                            name: username,
+                            level: this.level,
+                            score: this.score + this.penalty
+                        });
+
+                        localStorage.setItem('memory_ranking', JSON.stringify(ranking));
+                        alert(`Has perdut! ${username}, has arribat al Nivell ${this.level}.`);
+                    } else {
+                        alert("Has perdut");
+                    }
                     window.location.assign("../");
                 }
             }
-
             this.flippedCards = [];
         }
     },
@@ -134,7 +150,6 @@ var game = {
             sessionStorage.removeItem('load');
         } else {
             if (toLoad && toLoad.gameMode === 2) {
-                // Carreguem la configuració del NOU NIVELL Mode 2
                 this.gameMode = 2;
                 this.level = toLoad.level;
                 this.score = toLoad.score;

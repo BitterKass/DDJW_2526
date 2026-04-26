@@ -11,6 +11,8 @@ addEventListener('load', function () {
         console.log("El teu nom és: " + name);
         alert("Comença la partida");
 
+        sessionStorage.setItem('username', name);
+
         sessionStorage.setItem('gameMode', mode);
         sessionStorage.removeItem('load');
         window.location.assign("./html/game.html");
@@ -57,5 +59,34 @@ addEventListener('load', function () {
             document.getElementById('saves-menu').style.display = 'none';
             document.getElementById('main-menu').style.display = 'block';
         });
+    });
+
+    document.getElementById('ranking').addEventListener('click', function () {
+        let ranking = JSON.parse(localStorage.getItem('memory_ranking')) || [];
+
+        document.getElementById('main-menu').style.display = 'none';
+        document.getElementById('ranking-menu').style.display = 'block';
+
+        let rankingList = document.getElementById('ranking-list');
+        rankingList.innerHTML = '';
+
+        if (ranking.length === 0) {
+            rankingList.innerHTML = '<p class="empty-msg">Encara no hi ha puntuacions.</p>';
+        } else {
+            ranking.sort((a, b) => b.level - a.level || b.score - a.score);
+
+            ranking.forEach((entry, index) => {
+                let div = document.createElement('div');
+                div.classList.add('ranking-item');
+                div.innerHTML = `<strong>#${index + 1} ${entry.name}</strong><br>
+                                 <small>Nivell ${entry.level} | ${entry.score} Punts</small>`;
+                rankingList.appendChild(div);
+            });
+        }
+    });
+
+    document.getElementById('back-to-menu-ranking').addEventListener('click', function () {
+        document.getElementById('ranking-menu').style.display = 'none';
+        document.getElementById('main-menu').style.display = 'block';
     });
 })

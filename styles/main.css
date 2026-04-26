@@ -131,3 +131,42 @@ input[type="number"]:focus, select:focus {
 	color: white;
 	text-shadow: 2px 4px 6px rgba(0,0,0,0.5);
 }
+
+#saves-menu, #ranking-menu {
+	display: none;
+}
+
+#saves-list, #ranking-list {
+	max-height: 300px;
+	overflow-y: auto;
+}
+
+#ranking-list {
+	text-align: left;
+}
+
+#ranking {
+	background: linear-gradient(135deg, #e67e22, #d35400);
+}
+
+#back-to-menu, #back-to-menu-ranking {
+	background: #95a5a6;
+	margin-top: 20px;
+}
+
+.save-btn {
+	height: auto !important;
+	padding: 10px !important;
+	background: linear-gradient(135deg, #9b59b6, #8e44ad) !important;
+}
+
+.ranking-item {
+	background: rgba(0,0,0,0.05);
+	margin: 8px 0;
+	padding: 10px;
+	border-radius: 8px;
+}
+
+.empty-msg {
+	text-align: center;
+}
