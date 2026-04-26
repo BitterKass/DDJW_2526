@@ -56,8 +56,7 @@ button:active {
 	box-shadow: 0 2px 4px rgba(0,0,0,0.2);
 }
 
-#play { background: linear-gradient(135deg, #4CAF50, #2E7D32); }
-#options { background: linear-gradient(135deg, #2196F3, #1565C0); }
+#play1, #play2 { background: linear-gradient(135deg, #4CAF50, #2E7D32); }#options { background: linear-gradient(135deg, #2196F3, #1565C0); }
 #saves { background: linear-gradient(135deg, #9C27B0, #6A1B9A); }
 #exit { background: linear-gradient(135deg, #F44336, #C62828); }
 #save, #apply, #default { background: linear-gradient(135deg, #FF9800, #EF6C00); }

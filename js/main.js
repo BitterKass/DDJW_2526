@@ -1,18 +1,23 @@
 addEventListener('load', function() {
-    document.getElementById('play').addEventListener('click',
-        function(){
-            let name = prompt("Entra el nom d'usuari:");
-
-            console.log("El teun nom és: " + name);
-            alert("Comença la partida");
-            sessionStorage.removeItem('load');
-            window.location.assign("./html/game.html");
-    });
-
-    document.getElementById('options').addEventListener('click', 
+    document.getElementById('options').addEventListener('click',
     function(){
         window.location.assign("./html/options.html");
     });
+
+    function startPlay(mode) {
+        let name = prompt("Entra el nom d'usuari:");
+        if (!name) return;
+
+        console.log("El teu nom és: " + name);
+        alert("Comença la partida");
+
+        sessionStorage.setItem('gameMode', mode);
+        sessionStorage.removeItem('load');
+        window.location.assign("./html/game.html");
+    }
+
+    document.getElementById('play1').addEventListener('click', () => startPlay(1));
+    document.getElementById('play2').addEventListener('click', () => startPlay(2));
 
     document.getElementById('saves').addEventListener('click', 
     function(){
