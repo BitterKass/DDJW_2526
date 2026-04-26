@@ -155,7 +155,7 @@ var game = {
                         this.penalty = 10;
                         this.timeBase = 1500;
                     } else {
-                        this.penalty = 25;
+                        this.penalty = 25; 
                         this.timeBase = 1000;
                     }
                 } else {
